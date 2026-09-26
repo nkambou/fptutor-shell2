@@ -302,3 +302,10 @@ if __name__ == "__main__":
     for n, c in HORS_FORME:
         a = analyser(n, c)
         print("  %-11s forme %-16s %s" % (n, a["forme"], a.get("motif", "")))
+
+# Noms anglais de l'interface du fournisseur (Table 2)
+name = nom
+command = commande
+test_template = gabarit_test
+analyse = analyser
+categorise = categoriser

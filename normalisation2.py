@@ -1,10 +1,10 @@
 """Normalisation v2 : au-dela des listes.
 
-La version 1 ne savait traiter qu'une recursion sur une liste, avec les motifs
+La version 1 ne savait traiter qu'une recursion sur une liste, avec les patterns
 [] et (x:xs). Elle laissait six familles du referentiel non validables. Cette
 version generalise sur trois axes.
 
-1. Constructeurs quelconques. Les motifs sont lus tels qu'ils sont ecrits, le
+1. Constructeurs quelconques. Les patterns sont lus tels qu'ils sont ecrits, le
    constructeur est identifie, ses champs sont numerotes, et un champ sur lequel
    porte un appel recursif devient RECi. Feuille / Noeud, Nothing / Just,
    [] / (x:xs) sont traites par le meme code.
@@ -60,7 +60,7 @@ def separer(nom, eq):
         return None
     return gauche[len(nom):].strip(), corps
 
-# ------------------------------------------------------------ 2. motifs
+# ------------------------------------------------------------ 2. patterns
 
 MOTIF_CONS = re.compile(r"^\(\s*(\w[\w']*)\s*:\s*(\w[\w']*)\s*\)$")
 MOTIF_CTOR = re.compile(r"^\(?\s*([A-Z]\w*)((?:\s+[\w'_]+)*)\s*\)?$")
@@ -94,7 +94,17 @@ def normaliser_corps(nom, corps, champs):
     for i, champ in enumerate(champs, start=1):
         e = re.sub(r"\b%s\b" % re.escape(champ), " C%d " % i, e)
     e = re.sub(r"\s+", " ", e)
-    return serrer(e)
+    return commuter(serrer(e))
+
+
+def commuter(e, operateurs=("+", "*")):
+    """Commutativite limitee : x + f xs et f xs + x decrivent le meme pas. Appliquee
+    a ++ ou a : elle produirait de fausses egalites, elle est donc restreinte."""
+    for op in operateurs:
+        m = re.match(r"^REC(\d*) \%s (.+)$" % op, e)
+        if m:
+            return "%s %s REC%s" % (m.group(2), op, m.group(1))
+    return e
 
 def serrer(e):
     e = re.sub(r"\s*,\s*", ", ", e)
@@ -122,7 +132,7 @@ def separer_gardes(nom, eq):
     if not branches:
         return None
     cond, alors = branches[0]
-    sinon = branches[1][1] if len(branches) > 1 else "RIEN"
+    sinon = branches[1][1] if len(branches) > 1 else "NOTHING"
     cond, alors, sinon = orienter(nom, cond, alors, sinon)
     return motif, "COND (%s) (%s) (%s)" % (cond, alors, sinon)
 
@@ -135,7 +145,7 @@ def orienter(nom, cond, alors, sinon):
         reste = re.sub(r"\b%s\b\s+\w+" % re.escape(nom), "", e).strip()
         return reste == "" and nom in e
     if seulement_recursif(alors) and not seulement_recursif(sinon):
-        return "NON (%s)" % cond, sinon, alors
+        return "NOT (%s)" % cond, sinon, alors
     return cond, alors, sinon
 
 
@@ -161,26 +171,26 @@ def analyser(nom, source):
         bases = recursifs and [c for c in equations if c not in recursifs] or vides
         pas = (equations[recursifs[0]] if recursifs
                else next((e for c, e in equations.items() if c not in bases), None))
-        return {"forme": "constructeurs",
+        return {"forme": "constructors",
                 "equations": equations,
                 "base": equations[bases[0]] if bases else None,
                 "pas": pas}
     if sans_motif:
-        return {"forme": "sans-motif", "equations": {}, "base": None, "pas": sans_motif[0]}
-    return {"forme": "non-analysable", "equations": {}, "base": None, "pas": None}
+        return {"forme": "no-pattern", "equations": {}, "base": None, "pas": sans_motif[0]}
+    return {"forme": "unanalysable", "equations": {}, "base": None, "pas": None}
 
 # ------------------------------------------------------------ 5. signatures
 
-FLECHE = re.compile(r"->")
+ARROW = re.compile(r"->")
 
-if "FLECHE" not in R.INFIXES:
-    R.INFIXES.append("FLECHE")
+if "ARROW" not in R.INFIXES:
+    R.INFIXES.append("ARROW")
 
 def arbre_de_signature(sig):
     """Analyse un type en arbre, en traitant [a] comme (LIST a) et -> comme un infixe."""
     s = sig.split("=>")[-1]
     s = re.sub(r"\[\s*(\w+)\s*\]", r"(LIST \1)", s)
-    s = s.replace("->", " FLECHE ")
+    s = s.replace("->", " ARROW ")
     return R.parse(R.tokens(s))
 
 # ------------------------------------------------------------ 6. alignement
@@ -271,13 +281,13 @@ if __name__ == "__main__":
     ]
     print("%-16s %-6s %-6s %s" % ("famille", "fins", "blocs", "forme generale"))
     print("-" * 74)
-    for titre, corpus in [("F-arbre", arbre), ("F-echec", echec),
-                          ("F-composition", compo), ("F-partielle", partielle)]:
+    for titre, corpus in [("F-tree", arbre), ("F-failure", echec),
+                          ("F-compose", compo), ("F-partial", partielle)]:
         n, f, blocs = aligner_corps(corpus)
         print("%-16s %-6d %-6d %s" % (titre, n, blocs, f))
 
     for titre, sigs in [
-        ("F-instances-classe", ["Forme -> String", "Jour -> String", "Reponse -> String"]),
+        ("F-instances", ["Forme -> String", "Jour -> String", "Reponse -> String"]),
         ("F-fmap", ["(a -> b) -> [a] -> [b]",
                     "(a -> b) -> Arbre a -> Arbre b",
                     "(a -> b) -> Boite a -> Boite b"])]:

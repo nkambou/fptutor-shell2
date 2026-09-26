@@ -1,0 +1,58 @@
+{
+ "fonction": "somme",
+ "commentaire": "Jeu de cas pour Python. Adaptez-le a votre langage : les ecritures d'equivalentes doivent rendre le meme terme, celles de distinctes des termes differents.",
+ "equivalentes": [
+  {
+   "etiquette": "ordre direct",
+   "code": "def somme(xs):\n    if not xs:\n        return 0\n    return xs[0] + somme(xs[1:])"
+  },
+  {
+   "etiquette": "operandes echanges",
+   "code": "def somme(xs):\n    if not xs:\n        return 0\n    return somme(xs[1:]) + xs[0]"
+  },
+  {
+   "etiquette": "test du vide autrement",
+   "code": "def somme(xs):\n    if len(xs) == 0:\n        return 0\n    return xs[0] + somme(xs[1:])"
+  },
+  {
+   "etiquette": "expression conditionnelle",
+   "code": "def somme(xs):\n    return 0 if not xs else xs[0] + somme(xs[1:])"
+  }
+ ],
+ "distinctes": [
+  {
+   "etiquette": "comprehension",
+   "code": "def somme(xs):\n    return sum([x for x in xs])"
+  },
+  {
+   "etiquette": "boucle",
+   "code": "def somme(xs):\n    t = 0\n    for x in xs:\n        t += x\n    return t"
+  },
+  {
+   "etiquette": "fonction de bibliotheque",
+   "code": "def somme(xs):\n    return sum(xs)"
+  }
+ ],
+ "messages": [
+  [
+   "IndentationError: expected an indented block",
+   "syntax"
+  ],
+  [
+   "NameError: name 'fo' is not defined",
+   "unknown-name"
+  ],
+  [
+   "TypeError: unsupported operand type(s)",
+   "incompatible-types"
+  ],
+  [
+   "RecursionError: maximum recursion depth exceeded",
+   "wrong-recursive-call"
+  ],
+  [
+   "",
+   "wrong-result"
+  ]
+ ]
+}

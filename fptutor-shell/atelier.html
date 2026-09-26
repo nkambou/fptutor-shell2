@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Atelier FPTutor — créer un tuteur</title>
+<style>
+ :root{--encre:#16283c;--moyen:#3f5d7d;--tiers:#8fa3b8;--clair:#e3e9ef;
+       --fond:#eef2f6;--bord:#c3cdd8;--gris:#5c6b7a}
+ *{box-sizing:border-box}
+ body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"DejaVu Sans",sans-serif;
+      font-size:13.5px;color:var(--encre);background:#f6f8fa}
+ .bandeau{background:var(--encre);color:#fff;padding:11px 16px;font-weight:600;
+          display:flex;justify-content:space-between;align-items:center}
+ .bandeau span{font-weight:400;font-size:12px;opacity:.85}
+ main{padding:14px;max-width:1120px;margin:0 auto}
+ .carte{background:#fff;border:1px solid var(--bord);border-radius:5px;
+        margin-bottom:13px;overflow:hidden}
+ .titre{padding:6px 11px;font-size:12.5px;font-weight:600;background:var(--encre);
+        color:#fff;display:flex;justify-content:space-between}
+ .titre.m{background:var(--moyen)}.titre.t{background:var(--tiers);color:var(--encre)}
+ .corps{padding:11px}
+ .note{font-size:11.5px;color:var(--gris);line-height:1.5;margin-top:7px}
+ label{display:block;font-size:11px;color:var(--gris);margin:7px 0 2px}
+ input,select,textarea{font:inherit;font-size:12.5px;padding:5px 7px;width:100%;
+   border:1px solid var(--bord);border-radius:3px;background:#fff;color:var(--encre)}
+ textarea{font-family:"DejaVu Sans Mono",monospace;font-size:11.5px;min-height:74px}
+ button{font:inherit;font-size:12.5px;padding:6px 12px;border-radius:4px;
+        border:1px solid var(--encre);background:var(--encre);color:#fff;cursor:pointer}
+ button.sec{background:#fff;color:var(--encre)}
+ button:disabled{opacity:.4;cursor:not-allowed}
+ .rangee{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+ pre{background:var(--fond);padding:9px;border-radius:4px;font-size:11px;
+     overflow:auto;white-space:pre-wrap;margin:8px 0 0}
+ table{border-collapse:collapse;width:100%;font-size:12px;margin-top:6px}
+ th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;
+    color:var(--gris);border-bottom:1px solid var(--bord);padding:4px 6px}
+ td{padding:4px 6px;border-bottom:1px solid #eef1f4}
+ td.m{font-family:"DejaVu Sans Mono",monospace;font-size:11px}
+ .ok{color:#1f5c33;font-weight:600}.ko{color:#8a2f2f;font-weight:600}
+ .etapes{counter-reset:e}
+ .etape{display:flex;gap:9px;margin-bottom:7px;font-size:12px;line-height:1.5}
+ .etape b{flex:0 0 20px;height:20px;border-radius:50%;background:var(--encre);
+          color:#fff;text-align:center;font-size:11px;line-height:20px}
+</style>
+</head>
+<body>
+<div class="bandeau">Atelier FPTutor — créer un tuteur pour un nouveau langage
+  <span id="etat">…</span></div>
+<main>
+
+<div class="carte"><div class="titre">Tuteurs existants</div>
+ <div class="corps"><div id="liste"></div>
+ <div class="note">Un tuteur est un répertoire contenant un fournisseur
+  <code>language_*.py</code>. Le shell, lui, est partagé et n'a pas à être
+  touché pour ajouter un langage.</div></div></div>
+
+<div class="carte"><div class="titre m">1 · Engendrer le répertoire</div>
+ <div class="corps">
+  <label>Langage</label>
+  <select id="lang" onchange="choisirLangage()"></select>
+  <div class="rangee" style="margin-top:8px">
+   <div><label>Nom court</label><input id="court" placeholder="ml"></div>
+   <div><label>Répertoire</label><input id="rep" placeholder="mltutor"></div>
+   <div><label>Commande d'exécution</label><input id="interp" placeholder="ocaml"></div>
+   <div><label>Extension</label><input id="ext" placeholder=".ml"></div>
+  </div>
+  <div class="note">Les commandes proposées sont les plus courantes ; ajustez-les
+   à votre installation. « Autre langage » laisse les quatre champs libres.</div>
+
+  <label style="margin-top:12px">Activités du nouveau tuteur</label>
+  <div class="note" style="margin-top:0">Les familles et les ancrages du tuteur
+   de référence sont instanciés dans le nouveau tuteur : mêmes familles, mêmes
+   énoncés, mêmes valeurs attendues. Décochez ce que vous ne voulez pas, et
+   ajoutez-en d'autres plus tard dans le fichier produit. Les activités restent
+   engendrées par le système à partir de ce fichier.</div>
+  <div id="modele" class="note">chargement…</div>
+
+  <div style="margin-top:12px;padding:9px;background:var(--fond);border-radius:4px">
+   <div id="apercu" class="note" style="margin:0"></div>
+   <div style="margin-top:8px">
+    <button onclick="creer()" id="btnCreer">Créer le tuteur maintenant</button>
+    <label style="display:inline;margin-left:10px"><input type="checkbox" id="force"
+     style="width:auto"> écrire dans un répertoire non vide</label></div>
+   <div class="note">Rien n'est écrit sur le disque avant ce bouton. Il crée le
+    répertoire et y dépose quatre fichiers.</div>
+  </div>
+  <div id="resCreer"></div>
+ </div></div>
+
+<div class="carte"><div class="titre m">2 · Écrire l'analyseur, puis l'éprouver ici</div>
+ <div class="corps">
+  <div class="note"><b>Ce que vous devez écrire.</b> La fonction
+   <code>analyse(nom, code)</code> de votre fournisseur reçoit le nom de la
+   fonction demandée et le code soumis par l'apprenant. Elle rend un
+   dictionnaire à trois clés.
+   <br><br>
+   <code>forme</code> : l'une des six valeurs du cadre.
+   <code>constructors</code> si le code distingue le cas vide et le cas où il
+   reste un élément, ce qui est la seule forme que le cadre sait aligner ;
+   sinon <code>no-pattern</code>, <code>iterative</code>,
+   <code>comprehension</code>, <code>no-recursion</code> ou
+   <code>unanalysable</code>.
+   <br><br>
+   <code>base</code> : la valeur du cas vide, telle quelle.
+   <br><br>
+   <code>pas</code> : le cas récursif réécrit dans le vocabulaire commun, qui
+   n'appartient à aucun langage. <code>C1</code> à <code>Cn</code> pour les
+   champs du motif, <code>REC</code> pour l'appel récursif, <code>COND</code>
+   pour une décision, <code>LIST</code> pour une construction de liste,
+   <code>REST</code> pour le reste de la structure, <code>first</code> pour le
+   premier élément.
+   <br><br>
+   <b>L'exigence unique.</b> Deux écritures qui ne diffèrent que par la syntaxe
+   doivent rendre exactement le même <code>pas</code>. C'est ce qui rend les
+   comptes d'alignement stables, et c'est ce que le banc d'essai vérifie à
+   l'étape 3.
+   <br><br>
+   <b>Comment s'y prendre.</b> Collez ci-dessous trois écritures équivalentes
+   de la même fonction, l'une après l'autre, et regardez si le
+   <code>pas</code> est identique. S'il diffère, une normalisation manque :
+   l'ordre des opérandes d'une addition, le nom des variables, la façon de
+   tester le vide. C'est plus rapide à diagnostiquer ici qu'à travers un
+   compte d'alignement erroné deux couches plus haut.</div>
+  <div class="rangee" style="margin-top:8px">
+   <div><label>Fournisseur</label><select id="modAn"></select></div>
+   <div><label>Nom de la fonction</label><input id="fonc" value="somme"></div>
+  </div>
+  <label>Écriture</label>
+  <textarea id="codeAn">somme [] = 0
+somme (x:xs) = x + somme xs</textarea>
+  <div style="margin-top:8px"><button class="sec" onclick="analyser()">Analyser</button></div>
+  <div id="resAn"></div>
+ </div></div>
+
+<div class="carte"><div class="titre m">3 · Banc d'essai</div>
+ <div class="corps">
+  <div class="note">Le banc vérifie deux propriétés. <b>Réunion</b> : les
+   écritures déclarées équivalentes rendent le même terme. <b>Séparation</b> :
+   les écritures déclarées distinctes rendent des termes distincts. Un échec
+   de la première fait écarter des solutions correctes ; un échec de la
+   seconde fait entrer au corpus des solutions qui ne montrent rien.</div>
+  <div class="rangee" style="margin-top:8px">
+   <div><label>Fournisseur</label><select id="modBanc"></select></div>
+  </div>
+  <div style="margin-top:8px"><button class="sec" onclick="banc()">Passer le banc</button>
+   <span class="note" id="noteBanc" style="margin-left:8px"></span></div>
+  <div id="resBanc"></div>
+ </div></div>
+
+<div class="carte"><div class="titre t">4 · Ce qui reste, dans l'ordre</div>
+ <div class="corps etapes">
+  <div class="etape"><b>1</b><div>Écrire <code>analyse</code>, le seul des cinq
+   éléments qui demande un vrai travail, et le passer au banc jusqu'à ce que les
+   deux propriétés tiennent.</div></div>
+  <div class="etape"><b>2</b><div>Compléter <code>command</code> et
+   <code>test_template</code>, deux lignes chacune, puis projeter les messages
+   du compilateur dans <code>categorise</code>.</div></div>
+  <div class="etape"><b>3</b><div>Écrire les ancrages dans
+   <code>activities_&lt;court&gt;.py</code>, puis lancer l'inducteur
+   d'obligations depuis la racine :
+   <code>TUTOR_DIR=&lt;rep&gt; TUTOR_LANGUAGE=language_&lt;court&gt; python3 obligations.py</code>
+   </div></div>
+  <div class="etape"><b>4</b><div>Contrôler les familles :
+   <code>… python3 generateur.py</code>. Une famille non conforme n'est pas
+   servie.</div></div>
+  <div class="etape"><b>5</b><div>Lancer : <code>python3 fptutor &lt;rep&gt;</code>.
+   </div></div>
+ </div></div>
+
+</main>
+<script>
+const el = (i) => document.getElementById(i);
+async function get(r){ return await (await fetch(r)).json(); }
+async function post(r, c){
+  return await (await fetch(r, {method:"POST",
+    headers:{"Content-Type":"application/json"}, body:JSON.stringify(c)})).json();
+}
+let TUTEURS = [], LANGAGES = [], MODELE = null;
+
+async function charger(){
+  const d = await get("/api/tuteurs");
+  TUTEURS = d.tuteurs || [];
+  LANGAGES = d.langages || [];
+  el("lang").innerHTML = LANGAGES.map((l, i) =>
+    '<option value="' + i + '">' + l.nom + '  —  ' + l.interprete + '  ' + l.extension +
+    '</option>').join("") + '<option value="autre">Autre langage…</option>';
+  choisirLangage();
+  chargerModele();
+  el("etat").textContent = TUTEURS.length + " tuteur(s) · " + d.racine;
+  el("liste").innerHTML = TUTEURS.length ?
+   '<table><tr><th>répertoire</th><th>fournisseur</th><th>fichiers</th><th>données</th></tr>' +
+   TUTEURS.map(t => '<tr><td class="m">' + t.repertoire + '</td><td class="m">' +
+     t.fournisseurs.join(", ") + '</td><td class="note" style="margin:0">' +
+     t.fichiers.join(", ") + '</td><td>' +
+     (t.donnees ? '<span class="ok">cohorte</span>' : '<span class="note">vierge</span>') +
+     '</td></tr>').join("") + '</table>'
+   : '<div class="note">Aucun tuteur pour l\'instant.</div>';
+  const opts = TUTEURS.flatMap(t => t.fournisseurs.map(f =>
+    '<option value="' + t.repertoire + '|' + f + '">' + f + '  (' + t.repertoire + ')</option>'));
+  el("modAn").innerHTML = opts.join("");
+  el("modBanc").innerHTML = opts.join("");
+}
+
+function choisirLangage(){
+  const v = el("lang").value;
+  if (v === "autre") {
+    el("court").value = ""; el("rep").value = "";
+    el("interp").value = ""; el("ext").value = "";
+  } else {
+    const l = LANGAGES[+v];
+    el("court").value = l.court; el("rep").value = l.court + "tutor";
+    el("interp").value = l.interprete; el("ext").value = l.extension;
+  }
+  majApercu();
+}
+
+async function chargerModele(){
+  const d = await post("/api/modele", {tuteur: "hstutor"});
+  if (d.refus) { el("modele").innerHTML = '<span class="ko">' + d.refus + '</span>'; return; }
+  MODELE = d.familles;
+  let h = '<table><tr><th>famille</th><th>ancrage</th><th>énoncé</th><th>rôle</th><th></th></tr>';
+  for (const f of Object.keys(MODELE)) {
+    for (const groupe of ["instances", "reemplois"]) {
+      for (const a of MODELE[f][groupe]) {
+        const cle = f + "/" + groupe + "/" + a.nom;
+        h += '<tr><td class="m">' + f + '</td><td class="m">' + a.nom + '</td>' +
+             '<td>' + a.enonce + '</td><td class="note" style="margin:0">' +
+             (groupe === "instances" ? "instance" : "réemploi") + '</td>' +
+             '<td><input type="checkbox" class="anc" value="' + cle +
+             '" checked onchange="majApercu()" style="width:auto"></td></tr>';
+      }
+    }
+  }
+  el("modele").innerHTML = h + '</table>';
+  majApercu();
+}
+
+function retenus(){
+  return [...document.querySelectorAll(".anc")].filter(x => x.checked).map(x => x.value);
+}
+
+function majApercu(){
+  const r = retenus(), court = el("court").value || "?";
+  const rep = el("rep").value || "?";
+  el("apercu").innerHTML = "À créer : <b>" + rep + "/</b> avec language_" + court +
+    ".py, activities_" + court + ".py, referentiel.json et LISEZMOI.md — " +
+    r.length + " activité(s) instanciée(s).";
+  el("btnCreer").disabled = !(el("court").value && el("rep").value);
+}
+
+async function creer(){
+  el("btnCreer").disabled = true;
+  const r = await post("/api/creer", {court: el("court").value,
+    repertoire: el("rep").value, interprete: el("interp").value,
+    extension: el("ext").value, force: el("force").checked,
+    modele: "hstutor", retenus: retenus()});
+  el("btnCreer").disabled = false;
+  el("resCreer").innerHTML = r.refus
+    ? '<pre class="ko">' + r.refus + '</pre>'
+    : '<pre>' + r.chemin + '\n\n' + r.fichiers.map(f => "  " + f).join("\n") +
+      '\n\nEnsuite :\n' + r.suite.map((s, i) => "  " + (i+1) + ". " + s).join("\n") + '</pre>';
+  if (!r.refus) await ["court","rep"].forEach(i => el(i).addEventListener("input", majApercu));
+charger();
+}
+
+async function analyser(){
+  const [tut, mod] = el("modAn").value.split("|");
+  const r = await post("/api/analyser", {module: mod, tuteur: tut,
+    fonction: el("fonc").value, code: el("codeAn").value});
+  el("resAn").innerHTML = r.refus
+    ? '<pre class="ko">' + r.refus + '</pre>'
+    : '<table><tr><th>forme</th><th>cas de base</th><th>cas récursif</th></tr>' +
+      '<tr><td class="m">' + r.forme + '</td><td class="m">' + (r.base || "—") +
+      '</td><td class="m">' + (r.pas || "—") + '</td></tr></table>' +
+      '<div class="note">Une forme <code>constructors</code> avec un cas de base et ' +
+      'un cas récursif non vides est ce que le cadre sait aligner.</div>';
+}
+
+async function banc(){
+  const [tut, mod] = el("modBanc").value.split("|");
+  el("noteBanc").textContent = "en cours…";
+  const r = await post("/api/banc", {module: mod, tuteur: tut});
+  el("noteBanc").textContent = "";
+  el("resBanc").innerHTML = r.refus
+    ? '<pre class="ko">' + r.refus + '</pre>'
+    : '<pre>' + r.rapport + '</pre><div class="note ' + (r.code ? "ko" : "ok") + '">' +
+      (r.code ? "Le fournisseur n'est pas encore conforme." :
+                "Les deux propriétés tiennent sur ce jeu de cas.") + '</div>';
+}
+
+["court","rep"].forEach(i => el(i).addEventListener("input", majApercu));
+charger();
+</script>
+</body>
+</html>

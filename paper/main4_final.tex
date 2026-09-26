@@ -249,17 +249,20 @@ system is expensive, difficult to see, and unlikely to be reconstructed
 by someone building an equivalent tutor for another language.
 
 \subsubsection{Requirements of the Instructional Order}
-HaskellTutor serves a French-medium course.\footnote{The framework itself
-is in English: the provider interface, the common vocabulary, the contract values and
-the learner states all use English identifiers, so that a provider can be
-written without reading French. What remains localized is the course
-content, namely the activity names and statements and the family
-identifiers of the referential, which belong to the course rather than
-to the framework.
-Screenshots have been translated for publication. Activity names appearing
-in traces are reproduced as they occur in the running system:
-\emph{doubler} doubles each element, \emph{carres} squares it,
-\emph{aplatir} concatenates a list of lists.} Learners write several
+HaskellTutor serves a French-medium course.\footnote{The system was written in French, and this paper
+refers to its components by English names; Table 2, for instance, gives the
+provider elements in English, which the Python provider implements as
+\texttt{commande}, \texttt{gabarit\_test}, \texttt{analyser} and
+\texttt{categoriser}. Screenshots have been translated for publication.
+Traces are reproduced verbatim from the scripts of Section 12 and keep
+their French labels: \emph{pas} (step), \emph{forme} (form),
+\emph{attendu} (expected), \emph{conforme} (conforming), \emph{corpus
+insuffisant} (insufficient corpus), \emph{instable} (unstable),
+\emph{remontee} (abstraction), \texttt{LISTE} (list construction),
+\texttt{premier} (first element), and \texttt{RESTE} (rest of a list).
+Activity names are likewise those of the running system: \emph{doubler}
+doubles each element, \emph{carres} squares it, \emph{aplatir}
+concatenates a list of lists.} Learners write several
 recursive definitions that share a structure they
 have not been told about, such as summing a list, multiplying it,
 counting it, and concatenating a list of lists. The tutor then places
@@ -541,7 +544,7 @@ framework.
 The interface is possible only because framework and providers share a
 vocabulary belonging to neither language: \texttt{C1..Cn} for the fields
 of a pattern, \texttt{REC} for a recursive call, \texttt{COND} for a
-decision, \texttt{LIST} for a list construction, and prefix application
+decision, \texttt{LISTE} for a list construction, and prefix application
 for the rest. A provider expresses a learner's definition in those
 terms, and the framework never looks inside them.
 
@@ -597,10 +600,12 @@ one.
 Three Python definitions of the map family gave:
 \begin{samepage}\noindent\begin{minipage}{\linewidth}
 \begin{verbatim}
-doubler     base []   step ((LIST (2 * C1)) + REC)
-majuscules  base []   step ((LIST (upper C1)) + REC)
-initiales   base []   step ((LIST (first C1)) + REC)
--> 1 variation point, expected 1   form ((LIST ?1) + REC)
+famille de transformation
+  doubler     base []   pas ((LISTE (2 * C1)) + REC)
+  majuscules  base []   pas ((LISTE (upper C1)) + REC)
+  initiales   base []   pas ((LISTE (premier C1)) + REC)
+  -> 1 point(s) de variation, attendu 1 : conforme
+     forme ((LISTE ?1) + REC)
 \end{verbatim}
 \end{minipage}\end{samepage}
 
@@ -608,11 +613,13 @@ initiales   base []   step ((LIST (first C1)) + REC)
 Four definitions of the fold family gave:
 \begin{samepage}\noindent\begin{minipage}{\linewidth}
 \begin{verbatim}
-somme       base 0    step (C1 + REC)
-produit     base 1    step (C1 * REC)
-longueur    base 0    step (1 + REC)
-aplatir     base []   step (C1 + REC)
--> 3 variation points, expected 3  form (?2 ?1 REC)
+famille du pli
+  somme       base 0    pas (C1 + REC)
+  produit     base 1    pas (C1 * REC)
+  longueur    base 0    pas (1 + REC)
+  aplatir     base []   pas (C1 + REC)
+  -> 3 point(s) de variation, attendu 3 : conforme
+     forme (?2 ?1 REC)
 \end{verbatim}
 \end{minipage}\end{samepage}
 
@@ -670,16 +677,27 @@ condition operating on Python code. The
 generalization she writes is stored, and under a collaborative contract
 it would feed the team workshop.
 
-The reproduced submission and policy decisions were:
+The output of \texttt{trace\_pytutor.py} (Section 12), reproduced verbatim
+except for line breaks, was:
 \begin{samepage}\noindent\begin{minipage}{\linewidth}
 \begin{verbatim}
-activity doubler     tests ok -> set aside (comprehension); corpus 0/3
-activity majuscules  tests ok -> admitted; corpus 1/3
-activity initiales   tests ok -> admitted; corpus 2/3; gauge 1 point
-activity carres      tests ok -> admitted; corpus 3/3; policy 1 point, unstable
-activity notes       tests ok -> admitted; corpus 4/3; policy 1 point, stable
-decision remontee
-corpus: majuscules, initiales, carres, notes
+minimum: 3
+doubler: tests=ok, admission=no, corpus=0/3,
+  points=None, decision=instance,
+  reason=corpus insuffisant (0 sur 3)
+majuscules: tests=ok, admission=yes, corpus=1/3,
+  points=None, decision=instance,
+  reason=corpus insuffisant (1 sur 3)
+initiales: tests=ok, admission=yes, corpus=2/3,
+  points=1, decision=instance,
+  reason=corpus insuffisant (2 sur 3)
+carres: tests=ok, admission=yes, corpus=3/3,
+  points=1, decision=instance,
+  reason=alignement a 1 points mais instable
+notes: tests=ok, admission=yes, corpus=4/3,
+  points=1, decision=remontee,
+  reason=alignement stable a 1 points de variation
+workshop corpus: majuscules, initiales, carres, notes
 set aside: doubler
 \end{verbatim}
 \end{minipage}\end{samepage}
@@ -696,23 +714,13 @@ provider and supplying Python anchors. As in Section 5.5, \texttt{doubler}
 passes its tests but does not enter the alignment corpus. In the progress
 label, ``of 3'' is the minimum before the policy evaluates alignment;
 the display can calculate a count on two solutions, and a fourth
-comparable solution confirms the policy's first count:
-\begin{samepage}\noindent\begin{minipage}{\linewidth}
-\begin{verbatim}
-decision  instance  (corpus insufficient, 0 of 3)
-activity  doubler     tests ok (comprehension, set aside)
-decision  instance  (corpus insufficient, 0 of 3)
-activity  majuscules  tests ok
-decision  instance  (corpus insufficient, 1 of 3)
-activity  initiales   tests ok
-decision  instance  (corpus insufficient, 2 of 3;
-                     gauge at 1 point)
-activity  carres      tests ok
-decision  instance  (alignment at 1 point, not yet stable)
-activity  notes       tests ok
-decision  remontee (alignment stable at 1 variation point)
-\end{verbatim}
-\end{minipage}\end{samepage}
+comparable solution confirms the policy's first count. The
+\texttt{decision} and \texttt{reason} fields of the trace in Section 5.5 are
+the policy's own output: \texttt{instance} with an insufficient corpus for
+zero, one and two admitted solutions, \texttt{instance} with an unstable
+alignment at three, and \texttt{remontee}, the system's label for the
+abstraction decision, at four.
+
 
 
 The policy's stability bookkeeping was corrected so that repeated reads
@@ -800,14 +808,15 @@ one ablates an author's anchors.
 All are reproducible from the accompanying artefacts.
 
 \subsection{Provider Correctness}
-Six writings of a summation in Python were used: three equivalent
-structural recursions, one iterative, one using a library function, and
-one written as a conditional expression. The bench ran them, confirmed
-that all six compute the same results, normalized each, and reported the
-equivalence classes.
+Seven writings of a summation in Python were used: four equivalent
+structural recursions, differing in operand order, in the test for the
+empty list, and in the use of a conditional expression, and three
+distinct writings, namely a comprehension, a loop, and a library
+function. The bench normalized each and reported the equivalence
+classes.
 
-On the first run it reported four classes instead of three and thereby
-located three defects. Commutativity was not applied, so that
+On the first run the equivalent writings did not all coincide, and the
+bench thereby located three defects. Commutativity was not applied, so that
 \texttt{somme(xs[1:]) + xs[0]} did not coincide with
 \texttt{xs[0] + somme(xs[1:])}. A \texttt{return} of a
 conditional expression was not recognized as a base-and-step definition.
@@ -816,10 +825,23 @@ rather than as lacking recursion, which would have produced the wrong
 explanation to the learner. After correction:
 \begin{samepage}\noindent\begin{minipage}{\linewidth}
 \begin{verbatim}
-6 writings -> 3 classes
-  structural     base 0     step (C1 + REC)     x4
-  iterative      -                              x1
-  no recursion   -          step (sum xs)       x1
+7 ecritures -> 4 terme(s) distinct(s)
+
+  constructeurs  base 0        pas (C1 + REC)
+      ordre direct, operandes echanges,
+      test du vide autrement,
+      expression conditionnelle
+  comprehension  base -        pas -
+      comprehension
+  iteratif       base -        pas -
+      boucle
+  sans-recursion base -        pas (sum xs)
+      fonction de bibliotheque
+
+REUNION  ok : les 4 ecritures equivalentes rendent
+  le meme terme.
+SEPARATION ok : les 3 ecritures distinctes rendent
+  des termes distincts.
 \end{verbatim}
 \end{minipage}\end{samepage}
 
@@ -1048,7 +1070,7 @@ class FormeCanonique(BaseModel):
         description="Normalized base value.")
     cas_recursif: str = Field(
         description="Step in the common "
-                    "vocabulary: C1, REC, COND, LIST.")
+                    "vocabulary: C1, REC, COND, LISTE.")
 \end{lstlisting}
 
 
@@ -1175,16 +1197,31 @@ can be applied, since a normalizer that is not a function would
 invalidate the guarantees on which the rest of the framework depends.
 
 \section{Artefact Availability}
-Source files and a script for reproducing the Python session in
-Section 5.6 are available at
-\texttt{https://github.com/nkambou/fptutor-shell2}. Run
-\texttt{python3 trace\_pytutor.py} from the repository root. The script
-evaluates the five submissions, reports admission and policy decisions,
-and checks that repeated reads of an unchanged corpus do not change the
-decision. The repository currently does not contain the full Haskell
-instantiation, the Python learner and teacher HTML pages, or a versioned
-archive covering all seven technical studies. Those materials must be
-added before the complete artifact can be claimed as reproducible.
+The framework, the Python instantiation, the Haskell normalizer with the
+reference solutions of the families, the authoring tools, and the scripts
+that reproduce every trace and technical study reported in this paper are
+available at \url{https://github.com/nkambou/fptutor-shell2}. The scripts
+require a Python~3 interpreter and no external library. Each result is
+produced by a single command, run from the repository root:
+\begin{verbatim}
+# Section 5.3: alignments of the Python provider
+cd pytutor && python3 langue_python.py
+# Sections 5.5 and 5.6: Python session and policy
+python3 trace_pytutor.py
+# Section 8.1: provider test bench
+cd fptutor-shell && python3 banc_essai.py \
+    --tuteur pytutor --cas cas_exemple.json \
+    langue_python
+# Section 8.2: family validation, Haskell counts
+python3 generateur.py
+# Sections 8.3 to 8.6: Tables 4 to 7
+python3 ablations.py
+# Sections 7.2 and 8.7: Table 3
+python3 obligations.py
+\end{verbatim}
+The provider interface of Table 2 is documented in
+\texttt{fptutor-shell/gabarit\_language.py}, which serves as the starting
+point for a third instantiation.
 
 \section*{Acknowledgments}
 This work was supported by the Natural Sciences and Engineering Research

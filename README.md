@@ -24,12 +24,13 @@ command from the repository root.
 
 | Result in the article                     | Command |
 | ----------------------------------------- | ------- |
-| Section 5.3, alignments of the Python provider | `cd pytutor && python3 langue_python.py` |
-| Sections 5.5 and 5.6, Python session and policy | `python3 trace_pytutor.py` |
-| Section 8.1, provider test bench          | `cd fptutor-shell && python3 banc_essai.py --tuteur pytutor --cas cas_exemple.json langue_python` |
-| Section 8.2, family validation and Haskell counts | `python3 generateur.py` |
-| Sections 8.3 to 8.6, Tables 4 to 7        | `python3 ablations.py` |
-| Sections 7.2 and 8.7, Table 3             | `python3 obligations.py` |
+| Sec. V-C, alignments of the Python provider | `cd pytutor && python3 langue_python.py` |
+| Secs. V-E and V-F, Python session and policy | `python3 trace_pytutor.py` |
+| Sec. VI (step 4), inducer on the Python map family | `python3 obligations.py --python` |
+| Sec. VIII-A, provider test bench          | `cd fptutor-shell && python3 banc_essai.py --tuteur pytutor --cas cas_exemple.json langue_python` |
+| Sec. VIII-B, family validation and Haskell counts | `python3 generateur.py` |
+| Secs. VIII-C to VIII-F, Tables IV to VII  | `python3 ablations.py` |
+| Secs. VII-B and VIII-G, Table III         | `python3 obligations.py` |
 
 ## Building a new instantiation
 

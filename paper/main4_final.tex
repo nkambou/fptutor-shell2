@@ -1040,9 +1040,15 @@ The disagreement reported in Section 7.2 shows that an obligation can
 protect two different things. An anchor may be needed for the count to
 reach the value the referential declares, which the inducer detects by
 ablation, or for the generalized form to keep its generality, which the
-count does not register. The inducer as specified covers the first kind;
-comparing the generalized forms with and without each anchor would cover
-the second, at the same linear cost. Granularity raises a related
+count does not register. The inducer as specified covers the first kind.
+The same ablations already expose the second: without \texttt{hauteurA}
+the generalized form becomes narrower. Deciding which narrowings are
+obligations requires a target, since removing \texttt{doubler} from the
+map family also narrows the form, to a function applied to the element,
+without the referential treating it as an obligation. The ablations
+therefore allow structural obligations to be checked against an
+explicitly specified target schema, which the referential already
+declares for each family. Granularity raises a related
 question for the session policy. The framework carries it as an explicit
 field of a family, and the policy counts at the declared granularity.
 This matters for the filter
@@ -1168,8 +1174,8 @@ is necessary.
 Fourth, the most expensive part of the design can be mechanized. The
 obligations of an activity family took us weeks to find by hand and were
 found incompletely. An ablation over reference solutions recovers them
-in seconds, including one exercise we had missed, and it separates the
-obligations that the count requires from those that protect the form of
+in seconds, including one exercise we had missed, and it exposes both the
+obligations that the count requires and those that protect the form of
 the generalization.
 
 Finally, Section 10 sets out, as a projection rather than a result, what the same separation offers to a hybrid architecture. If the pedagogical policy is held apart from the domain knowledge, a language model can serve as a provider at the interface while the algebraic engine keeps the decisions that carry an instructional commitment. We have not built this system, and Section 10.2 states the conditions under which we would; we report it because the boundary the extraction produced turns out to be the boundary such an architecture needs.

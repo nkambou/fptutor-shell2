@@ -48,7 +48,7 @@
   ],
   [
    "RecursionError: maximum recursion depth exceeded",
-   "wrong-recursive-call"
+   "missing-base-case"
   ],
   [
    "",

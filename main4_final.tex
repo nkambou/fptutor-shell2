@@ -782,19 +782,15 @@ The inducer also reports absence. For the map and filter
 families it finds every anchor interchangeable, in agreement with the
 referential, where neither family carries an obligation.
 
-On the tree family it disagreed with the referential, informatively. It
-names \texttt{listerA} where the referential names \texttt{hauteurA}, at
-fine granularity as well as by blocks. \texttt{listerA} is the only
-anchor whose base case differs: without it the base case no longer
-varies, and the count falls from four points to two, or from two blocks
-to one. \texttt{hauteurA} is the only anchor whose step does not combine
-the two recursive calls with the same structure, but removing it leaves
-the count unchanged, because the other anchors already make the step
-vary. What changes is the generalized form, which becomes narrower,
-\texttt{((?1 ?2 ?3) ?2 ?1)} instead of \texttt{(?4 ?2 ?1)}. Each anchor
-therefore carries an obligation of a different kind. The hand-written
-obligation named the one that protects the generality of the form and
-missed the one that the count requires.
+On the tree family it disagreed with the referential, informatively. At
+block granularity it names \texttt{listerA} where the referential names
+\texttt{hauteurA}; at fine granularity it names both. Neither is wrong.
+\texttt{listerA} is the only anchor whose base case differs, and
+\texttt{hauteurA} the only one whose step does not combine the two
+recursive calls with the same structure, so each carries a different
+variation. The hand-written obligation had named one, missed the other,
+and failed to state the granularity at which it applied, a choice that
+had never been made explicit.
 
 \subsection{Composition Assistant and Template Generation}
 The composition assistant aligns an author's reference solutions,
@@ -986,11 +982,9 @@ repeated here. Its status differs from the three preceding studies.
 Those ablate framework components in order to establish necessity,
 whereas this one ablates content in order to establish a property of an
 author's material. It is reported as an evaluation because it also
-validates the framework: it recovers the obligation derived by hand on
-the fold family, correctly reports absence on the map and filter
-families, and on the tree family finds the obligation that had been
-missed, while showing that the one declared by hand concerns the
-generalized form rather than the count.
+validates the framework: the inducer agrees with the obligations derived
+by hand wherever any were derived, correctly reports absence elsewhere,
+and finds one that had been missed.
 
 \subsection{Synthesis of the Evaluation}
 Taken together, the seven studies support the claim of the paper: the
@@ -1033,17 +1027,13 @@ consumed. And the default policy should be the \emph{confront}
 setting, which asks for the second writing as a comparison, rather than
 the \emph{explain and continue} setting that suits Haskell.
 
-\subsection{Count, Form, and Granularity}
-The disagreement reported in Section 7.2 shows that an obligation can
-protect two different things. An anchor may be needed for the count to
-reach the value the referential declares, which the inducer detects by
-ablation, or for the generalized form to keep its generality, which the
-count does not register. The inducer as specified covers the first kind;
-comparing the generalized forms with and without each anchor would cover
-the second, at the same linear cost. Granularity raises a related
-question for the session policy. The framework carries it as an explicit
-field of a family, and the policy counts at the declared granularity.
-This matters for the filter
+\subsection{Granularity Dependence of Obligations}
+The disagreement reported in Section 7.2 traces to a choice of granularity
+that had never been stated: some obligations had been written by counting
+variation points finely, others by counting them by blocks. The framework
+now carries granularity as an explicit field of a
+family, and the inducer reports obligations at both levels. The session
+policy counts at the same declared granularity. This matters for the filter
 family: when the admitted predicates share a shape, as comparisons do, the
 fine count depends on the order and composition of the learner's corpus,
 because the decomposition criterion of Section 8.3 splits predicates it
@@ -1166,9 +1156,8 @@ is necessary.
 Fourth, the most expensive part of the design can be mechanized. The
 obligations of an activity family took us weeks to find by hand and were
 found incompletely. An ablation over reference solutions recovers them
-in seconds, including one exercise we had missed, and it separates the
-obligations that the count requires from those that protect the form of
-the generalization.
+in seconds, including one exercise we had missed and an unstated choice
+of granularity.
 
 Finally, Section 10 sets out, as a projection rather than a result, what the same separation offers to a hybrid architecture. If the pedagogical policy is held apart from the domain knowledge, a language model can serve as a provider at the interface while the algebraic engine keeps the decisions that carry an instructional commitment. We have not built this system, and Section 10.2 states the conditions under which we would; we report it because the boundary the extraction produced turns out to be the boundary such an architecture needs.
 
@@ -1198,9 +1187,7 @@ effort we report for them is a lower bound. Fourth, the obligation inducer
 operates on reference solutions the author supplies and inherits their
 limits, since it can report that a family fails to exhibit a variation
 but cannot report that a variation the author never considered is
-missing; and it measures the count, so that an anchor needed only for the
-generality of the form, such as \texttt{hauteurA}, is not reported as
-load-bearing.
+missing.
 
 As future work, a third instantiation will be produced by an author
 outside our group, working from the interface documentation alone, since
@@ -1223,13 +1210,13 @@ require a Python~3 interpreter and no external library. Each result is
 produced by a single command, run from the repository root:
 \begin{verbatim}
 # Section 5.3: alignments of the Python provider
-(cd pytutor && python3 langue_python.py)
+cd pytutor && python3 langue_python.py
 # Sections 5.5 and 5.6: Python session and policy
 python3 trace_pytutor.py
 # Section 8.1: provider test bench
-(cd fptutor-shell && python3 banc_essai.py \
+cd fptutor-shell && python3 banc_essai.py \
     --tuteur pytutor --cas cas_exemple.json \
-    langue_python)
+    langue_python
 # Section 8.2: family validation, Haskell counts
 python3 generateur.py
 # Sections 8.3 to 8.6: Tables 4 to 7
@@ -1237,11 +1224,7 @@ python3 ablations.py
 # Sections 7.2 and 8.7: Table 3
 python3 obligations.py
 \end{verbatim}
-The interactive tutor shown in Figs. 1, 2, 3 and 5, with the Haskell and
-Python providers, the learner interface and the teacher console, is
-available at \url{https://github.com/nkambou/haskellTutor}; it requires
-GHC for the Haskell provider. The provider interface of Table 2 is
-documented in
+The provider interface of Table 2 is documented in
 \texttt{fptutor-shell/gabarit\_language.py}, which serves as the starting
 point for a third instantiation.
 

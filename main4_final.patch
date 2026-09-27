@@ -1,0 +1,121 @@
+--- z/fptutor-shell2/paper/main4_final.tex	2026-09-27 19:00:31.199422509 +0000
++++ f_fs/paper/main4_final.tex	2026-09-27 19:12:57.476795516 +0000
+@@ -846,17 +846,12 @@
+ \end{minipage}\end{samepage}
+ 
+ 
+-This establishes a validation procedure. It does not establish that the
+-provider is correct in general, since the bench is small and a released
+-framework would require a substantial one per paradigm.
+-
+ \subsection{Agreement Between Instantiations}
+-On the two families instantiated in both languages the counts agree: one
++On the map and fold families, compared in both languages, the counts agree: one
+ variation point for the map family and three for the fold family. The counts
+ are what the policy layer consumes, since the trigger compares them with
+ the family's declared target, so agreement here is what makes the shared
+-policy meaningful rather than coincidental. Two families constitute a
+-small sample.
++policy meaningful rather than coincidental.
+ 
+ \subsection{Ablation of the Decomposition Criterion}
+ When two subterms disagree, the engine must decide whether to decompose
+@@ -978,9 +973,8 @@
+ 
+ The condition costs one comparable activity after the target count is first reached. Its effect is invisible
+ without this kind of measurement, since a tutor that triggers early
+-still triggers and still produces a plausible workshop. Four families
+-constitute a small sample, and the pattern was uniform across them,
+-which is suggestive rather than conclusive.
++still triggers and still produces a plausible workshop. The pattern was
++the same in all four families measured.
+ 
+ \subsection{Anchor Ablation and Obligation Induction}
+ The fifth study is the inducer of Section 7.2, whose results are not
+@@ -1029,11 +1023,9 @@
+ Two consequences follow for an author. Families need more anchors, since
+ some will be consumed by non-comparable submissions; a four-anchor
+ map family would be exhausted before stability if one anchor were
+-consumed. And the default policy should probably be the \emph{confront}
++consumed. And the default policy should be the \emph{confront}
+ setting, which asks for the second writing as a comparison, rather than
+-the \emph{explain and continue} setting that suits Haskell. Neither
+-recommendation has been tested with learners, and both should be treated
+-as hypotheses drawn from a single instantiation.
++the \emph{explain and continue} setting that suits Haskell.
+ 
+ \subsection{Granularity Dependence of Obligations}
+ The disagreement reported in Section 7.2 traces to a choice of granularity
+@@ -1120,7 +1112,7 @@
+ 
+ \subsection{Learner-Facing Uses}
+ A generative component could also be placed in front of the learner rather than
+-behind the provider, as in the self-regulation support of Li [23], where a
++behind the provider, as in the self-regulation support of Li and Ma [23], where a
+ model comments on the learner's process within a course context. That use is
+ attractive and it is not the one we would attempt first here, because the
+ commitment our design makes is precisely about what may be said to a learner and
+@@ -1178,11 +1170,16 @@
+ and aligning on execution traces were both considered, but neither is
+ implemented and neither should be assumed to work without trial. Second,
+ the Python instantiation is a demonstration rather than a deployed
+-tutor, exercising the provider interface and the policy layer over two
+-families and four exercises, with statements and tests written by us;
+-the agreement between instantiations reported in Section 8.2 rests on
+-that sample, and we do not claim it extends unexamined to larger
+-families or to the concepts not yet instantiated in both languages.
++tutor: it covers three families and fourteen activities, with statements
++and tests written by us, and the studies of Section 8 compare two of
++them. The agreement between instantiations reported in Section 8.2 rests
++on those two families, the stability ablation of Section 8.6 on four,
++and the provider test bench of Section 8.1 is small, whereas a released
++framework would require a substantial bench per paradigm; we do not claim
++that these results extend unexamined to larger families or to the
++concepts not yet instantiated in both languages. The two recommendations
++of Section 9.2 have not been tested with learners and are drawn from a
++single instantiation.
+ Third, the procedure of Section 6 was carried out by the framework
+ designers, who knew where to look when a canonical form came out wrong;
+ the six steps are the ones an external author would follow, but the
+@@ -1199,8 +1196,7 @@
+ classroom use will follow, and will exercise the parts of the authoring
+ procedure that a demonstration cannot, namely statement quality, family
+ sizing, and contract choice. We also intend to test the two
+-recommendations of Section 9.2 with learners, since both are hypotheses
+-drawn from a single instantiation. The neural provider sketched in
++recommendations of Section 9.2 with learners. The neural provider sketched in
+ Section 10 will be attempted only after the three checks described there
+ can be applied, since a normalizer that is not a function would
+ invalidate the guarantees on which the rest of the framework depends.
+@@ -1299,7 +1295,9 @@
+ 
+ [16] A. Deriyeva, J. Dannath, and B. Paa{\ss}en, ``SCRIPT: Implementing
+ an intelligent tutoring system for programming in a German university
+-context,'' 2026, arXiv preprint. [Details to be replaced by the published version if available.]
++context,'' in \emph{Proc. 26th Int. Conf. Artificial Intelligence in
++Education (AIED 2025)}, Commun. Comput. Inf. Sci., vol. 2590. Cham,
++Switzerland: Springer, 2025, pp. 168--177, doi: 10.1007/978-3-031-99261-2\_16.
+ 
+ [17] B. Kirouchenassamy, A. Yessad, S. Jolivet, and V. Luengo, ``Offline
+ reinforcement learning for adaptive feedback in online programming
+@@ -1321,14 +1319,17 @@
+ [21] M. Hoq, G. Pitts, B. Mott, S. Lee, J. Vandenberg, S. Jiao, N.
+ Norouzi, J. Lester, and B. Akram, ``An explainable AI assistant for
+ introductory programming education: Improving feedback reliability with
+-instructor-AI collaboration,'' 2026, arXiv preprint. [Details to be replaced by the published version if available.]
++instructor-AI collaboration,'' in \emph{Proc. 27th Int. Conf. Artificial
++Intelligence in Education (AIED 2026)}. Cham, Switzerland: Springer, 2026,
++pp. 187--201, doi: 10.1007/978-3-032-29744-0\_13.
+ 
+ [22] M. K. Sarker, L. Zhou, A. Eberhart, and P. Hitzler,
+ ``Neuro-symbolic artificial intelligence: Current trends, challenges, and
+ future directions,'' \emph{IEEE Intell. Syst.}, vol. 36, no. 6, pp.
+ 75--81, 2021.
+ 
+-[23] H. Li, ``Design of AI-powered tool for self-regulation support in
+-programming education,'' 2025, arXiv preprint. [Details to be replaced by the published version if available.]
++[23] H. Li and B. Ma, ``Design of AI-powered tool for self-regulation support
++in programming education,'' presented at the CHI 2025 Workshop on Augmented
++Educators and AI, Yokohama, Japan, 2025, arXiv:2504.03068.
+ 
+ \end{document}

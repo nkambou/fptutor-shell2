@@ -168,7 +168,8 @@ def vue_apprenant(r, e, ap):
     if cid:
         gen = c.get("generalisation")
         attendu = gen["points_de_variation_attendus"] if gen else None
-        pts, forme, blocs = (K.etat_alignement([(x["nom"], x["code"]) for x in corpus])
+        pts, forme, blocs = (K.compte_alignement(r, c["famille"],
+                                                 [(x["nom"], x["code"]) for x in corpus])
                              if len(corpus) >= 2 else (0, None, 0))
         vue["progres"] = {
             "solutions": len(corpus), "minimum": r["reglages"]["instances_min"],
@@ -209,7 +210,7 @@ def vue_apprenant(r, e, ap):
             vue["motif"] = "plus d'ancrage disponible dans la famille"
 
     if decision in ("remontee", "guidage") and corpus:
-        al = K.alignement_affichable(corpus)
+        al = K.alignement_affichable(corpus, r, c["famille"])
         al["mode"] = ct["remontee"] if decision == "remontee" else "guidee"
         al["guide"] = decision == "guidage"
         if al["mode"] == "exposee":
@@ -379,7 +380,8 @@ def api(chemin, params, corps):
                                  "options": q["options"]} for q in qs]}
                 gen2 = c.get("generalisation")
                 att = gen2["points_de_variation_attendus"] if gen2 else None
-                pts = (K.etat_alignement([(x["nom"], x["code"]) for x in corpus])[0]
+                pts = (K.compte_alignement(r, c["famille"],
+                                           [(x["nom"], x["code"]) for x in corpus])[0]
                        if len(corpus) >= 2 else 0)
                 rep["tuteur"] = {
                     "ton": "reussite",

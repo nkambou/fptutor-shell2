@@ -114,7 +114,7 @@ def ablation_commutativite():
 GARDES = [
     ("pairs", "pairs [] = []\npairs (x:xs)\n  | even x = x : pairs xs\n  | otherwise = pairs xs"),
     ("nonVides", "nonVides [] = []\nnonVides (s:ss)\n  | null s = nonVides ss\n  | otherwise = s : nonVides ss"),
-    ("admis", "admis [] = []\nadmis (n:ns)\n  | n >= 60 = n : admis ns\n  | otherwise = admis ns"),
+    ("admis", "admis [] = []\nadmis (p:ps)\n  | snd p >= 60 = p : admis ps\n  | otherwise = admis ps"),
 ]
 
 

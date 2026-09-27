@@ -528,6 +528,15 @@ def etat_alignement(corpus):
 
 # ============================================================ politique
 
+def compte_alignement(ref, famille, corpus):
+    """Le compte que la politique compare a la cible : points fins, ou blocs si la
+    famille le declare. Le compte fin depend de l'ordre et de la composition du
+    corpus lorsque les parties qui varient ont la meme forme (des predicats qui sont
+    tous des comparaisons, par exemple) ; le compte par blocs n'en depend pas."""
+    nb, forme, blocs = etat_alignement(corpus)
+    v = ref.get("familles", {}).get(famille, {}).get("validation", {})
+    return (blocs if v.get("granularite") == "blocs" else nb), forme, blocs
+
 def decider(ref, ap, cid):
     c, _ = concept(ref, cid)
     r = ref["reglages"]
@@ -547,8 +556,9 @@ def decider(ref, ap, cid):
     if n < r["instances_min"]:
         return "instance", "corpus insuffisant (%d sur %d)" % (n, r["instances_min"])
 
-    nb, forme, blocs = etat_alignement([(x["nom"], x["code"]) for x in corpus])
-    empreinte = [(x["nom"], x["code"]) for x in corpus]
+    nb, forme, blocs = compte_alignement(ref, c["famille"],
+                                         [(x["nom"], x["code"]) for x in corpus])
+    empreinte = [[x["nom"], x["code"]] for x in corpus]  # listes : comparables apres relecture JSON
     precedent = ap["stabilite"].get(cid)
     # Une relecture de la vue ne constitue pas une nouvelle observation.
     # Une revision d'une solution existante ne confirme pas non plus le compte.
@@ -582,13 +592,15 @@ def schema_employe(nom, code):
         return True
     return not (a["pas"] and "REC" in a["pas"])
 
-def alignement_affichable(corpus):
+def alignement_affichable(corpus, ref=None, famille=None):
     """Ce que l'atelier de remontee montre : les equations, ce qui est identique barre."""
     lignes = []
     for x in corpus:
         a = LANGUE.analyser(x["nom"], x["code"])
         lignes.append({"nom": x["nom"], "base": a["base"], "pas": a["pas"]})
-    nb, forme, blocs = etat_alignement([(x["nom"], x["code"]) for x in corpus])
+    paires = [(x["nom"], x["code"]) for x in corpus]
+    nb, forme, blocs = (compte_alignement(ref, famille, paires) if ref is not None
+                        else etat_alignement(paires))
     return {"lignes": lignes, "points": nb, "blocs": blocs, "forme": forme}
 
 # ============================================================ etat persistant

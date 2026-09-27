@@ -398,7 +398,7 @@
       "chapitre": 4,
       "validation": {
         "mode": "corps",
-        "granularite": "fins",
+        "granularite": "blocs",
         "attendu": 1
       }
     },
@@ -807,7 +807,7 @@
         }
       ],
       "solution_de_reference": "f ... = Nothing | Just ...",
-      "obligation": "reprendre comme ancrages les trois fonctions malhonnetes des chapitres 2, 3 et 6, pour que la remontee solde des dettes reelles de l'apprenant",
+      "obligation": "reprendre comme ancrages les trois fonctions malhonnetes rencontrees dans les unites precedentes, pour que la remontee solde des dettes reelles de l'apprenant",
       "validation": {
         "mode": "corps",
         "granularite": "fins",

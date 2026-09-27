@@ -40,7 +40,9 @@ if __name__ == "__main__":
 
 
 def gabarit_test(code, expressions):
-    lignes = "\n".join("    print(%s)" % e for e in expressions)
+    # repr : une chaine s'affiche entre apostrophes, comme dans les resultats attendus,
+    # et une chaine vide produit une ligne ('') au lieu d'une ligne blanche
+    lignes = "\n".join("    print(repr(%s))" % e for e in expressions)
     return GABARIT % (code.rstrip(), lignes)
 
 
@@ -123,7 +125,10 @@ class Normalisateur(ast.NodeVisitor):
         if sur_parametre and isinstance(sl, ast.Slice) and sl.lower is not None:
             if isinstance(sl.lower, ast.Constant) and sl.lower.value == 1:
                 return "RESTE"               # le reste de l'entree
-        return "(premier %s)" % self.rendre(n.value)
+        if isinstance(sl, ast.Constant) and isinstance(sl.value, int):
+            nom = {0: "premier", 1: "second"}.get(sl.value, "indice %d" % sl.value)
+            return "(%s %s)" % (nom, self.rendre(n.value))
+        return "(indice ? %s)" % self.rendre(n.value)
 
     def visit_IfExp(self, n):
         return "COND (%s) (%s) (%s)" % (self.rendre(n.test), self.rendre(n.body),
@@ -134,16 +139,59 @@ class Normalisateur(ast.NodeVisitor):
 
 
 def _vide(test):
-    """Reconnait les tests « l'entree est vide » : not xs, len(xs) == 0, xs == []."""
+    """Reconnait les tests « l'entree est vide » : not xs, len(xs) == 0, xs == [].
+    Le test doit porter sur l'entree elle-meme : xs[0] % 2 == 0 n'en est pas un."""
     if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
-        return True
-    if isinstance(test, ast.Compare):
-        d = test.comparators[0]
+        return isinstance(test.operand, ast.Name)
+    if isinstance(test, ast.Compare) and len(test.comparators) == 1:
+        g, d = test.left, test.comparators[0]
         if isinstance(d, ast.Constant) and d.value == 0:
-            return True
+            return (isinstance(g, ast.Call) and isinstance(g.func, ast.Name)
+                    and g.func.id == "len" and len(g.args) == 1
+                    and isinstance(g.args[0], ast.Name))
         if isinstance(d, ast.List) and not d.elts:
-            return True
+            return isinstance(g, ast.Name)
     return False
+
+
+def _nu(e):
+    """Retire une paire de parentheses qui entoure toute l'expression."""
+    while e.startswith("(") and e.endswith(")"):
+        prof = 0
+        for i, c in enumerate(e):
+            prof += c == "("
+            prof -= c == ")"
+            if prof == 0 and i < len(e) - 1:
+                return e
+        e = e[1:-1].strip()
+    return e
+
+
+def _etape(N, instructions):
+    """Rend la suite d'instructions du cas recursif comme une expression : un retour
+    donne son expression, un if donne COND (test) (alors) (sinon). Comme pour le
+    fournisseur Haskell, la selection est orientee : la branche qui conserve
+    l'element vient en premier, sinon le test est nie et les branches echangees."""
+    if not instructions:
+        return None
+    s = instructions[0]
+    if isinstance(s, ast.Return) and isinstance(s.value, ast.IfExp):
+        t = s.value
+        s = ast.If(test=t.test, body=[ast.Return(value=t.body)],
+                   orelse=[ast.Return(value=t.orelse)])
+    if isinstance(s, ast.Return) and s.value is not None:
+        return _nu(_serrer(N.rendre(s.value)))
+    if isinstance(s, ast.If):
+        alors = _etape(N, s.body)
+        sinon = _etape(N, s.orelse or instructions[1:])
+        if alors is None or sinon is None:
+            return None
+        test = _nu(_serrer(N.rendre(s.test)))
+        seul = lambda e: e.strip("() ") == "REC"
+        if seul(alors) and not seul(sinon):
+            test, alors, sinon = "NOT (%s)" % test, sinon, alors
+        return "COND (%s) (%s) (%s)" % (test, alors, sinon)
+    return None
 
 
 def _serrer(e):
@@ -173,6 +221,26 @@ def analyser(nom_fonction, code):
     base, pas = None, None
 
     corps = fn.body
+    # forme a gardes : if <test vide> : return <base>, puis une suite d'instructions
+    # qui peut elle-meme choisir entre deux retours (famille de la selection)
+    if not any(isinstance(s, (ast.For, ast.While)) for s in corps):
+        i_base = next((i for i, s in enumerate(corps) if isinstance(s, ast.If)), None)
+        if i_base is not None and _vide(corps[i_base].test):
+            tete = corps[i_base]
+            r_base = next((s for s in tete.body if isinstance(s, ast.Return)), None)
+            suite = tete.orelse or corps[i_base + 1:]
+            choix = suite and (
+                (isinstance(suite[0], ast.If) and not _vide(suite[0].test)) or
+                (isinstance(suite[0], ast.Return) and isinstance(suite[0].value, ast.IfExp)
+                 and not _vide(suite[0].value.test)))
+            if r_base is not None and choix:
+                etape = _etape(N, suite)
+                if etape is not None:
+                    base = _serrer(N.rendre(r_base.value))
+                    if "REC" not in etape:
+                        return {"forme": "sans-recursion", "base": base, "pas": etape,
+                                "motif": "aucun appel recursif : la solution ne montre pas la marche"}
+                    return {"forme": "constructeurs", "base": base, "pas": etape}
     # forme reconnue : if <test vide> : return <base>   puis   return <pas>
     for i, stmt in enumerate(corps):
         if isinstance(stmt, ast.If):

@@ -253,13 +253,16 @@ HaskellTutor serves a French-medium course.\footnote{The system was written in F
 refers to its components by English names; Table 2, for instance, gives the
 provider elements in English, which the Python provider implements as
 \texttt{commande}, \texttt{gabarit\_test}, \texttt{analyser} and
-\texttt{categoriser}. Screenshots have been translated for publication.
+\texttt{categoriser}. The screenshots show the English interface, which the system produces
+from its French source through a message catalogue.
 Traces are reproduced verbatim from the scripts of Section 12 and keep
 their French labels: \emph{pas} (step), \emph{forme} (form),
 \emph{attendu} (expected), \emph{conforme} (conforming), \emph{corpus
 insuffisant} (insufficient corpus), \emph{instable} (unstable),
 \emph{remontee} (abstraction), \texttt{LISTE} (list construction),
-\texttt{premier} (first element), and \texttt{RESTE} (rest of a list).
+\texttt{premier} and \texttt{second} (first and second element), and
+\texttt{RESTE} (rest of a list). The interface text of the screenshots is
+translated; the canonical forms they display keep the same French tokens.
 Activity names are likewise those of the running system: \emph{doubler}
 doubles each element, \emph{carres} squares it, \emph{aplatir}
 concatenates a list of lists.} Learners write several
@@ -283,13 +286,11 @@ can be badly formed in a way that reviewing each exercise separately
 will not reveal.
 
 Families needed \emph{specific anchors}. The referential declares sixteen
-families, and this paper refers to seven of them by English names, given
-here with the French identifiers under which they appear in the running
-system (Fig. 3): \emph{map} (\texttt{F-transformation}),
-\emph{filter} (\texttt{F-selection}), \emph{fold} (\texttt{F-pli}),
-\emph{composition} (\texttt{F-composition}), \emph{tree} (\texttt{F-arbre}),
-\emph{failure} (\texttt{F-echec}) and \emph{chaining}
-(\texttt{F-enchainement}). The fold family needs at least
+families (Fig. 3), and this paper refers to seven of them: \emph{map}
+(\texttt{F-map}), \emph{filter} (\texttt{F-filter}), \emph{fold}
+(\texttt{F-fold}), \emph{composition} (\texttt{F-compose}), \emph{tree}
+(\texttt{F-tree}), \emph{failure} (\texttt{F-failure}) and \emph{chaining}
+(\texttt{F-chain}). The fold family needs at least
 one anchor whose operation ignores the element, since without it every
 anchor consumes the head and learners conclude that the combining
 function must do so. The tree family needs one whose step does not
@@ -320,7 +321,7 @@ opens.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth,height=3.30in,keepaspectratio]{fig1_haskell.png}
-\caption{Two moments in a Haskell session, center and right panels of the learner's view. (a) The learner has submitted \texttt{notes (p:ps) = snd p : notes ps}, visible in the editor, which omits the equation for the empty list. The tutor gives a plain-language reading of the compiler message, the raw GHC warning appears below it, one level of scaffolding has been taken, and the progress panel reports two comparable solutions with one thing varying across them. (b) The abstraction workshop, opened once a third solution has confirmed the count, showing the learner's own three definitions aligned by base case and by step.}
+\caption{Two moments in a Haskell session, center and right panels of the learner's view. (a) The learner has submitted \texttt{notes (p:ps) = snd p : notes ps}, visible in the editor, which omits the equation for the empty list. The tutor gives a plain-language reading of the compiler message, the raw GHC warning appears below it, one level of scaffolding has been taken, and the progress panel reports two comparable solutions with one thing varying across them. (b) The abstraction workshop, opened once a fourth solution has confirmed the count, showing the learner's own four definitions aligned by base case and by step.}
 \end{figure*}
 
 Four elements of that view are consequences of the requirements above
@@ -343,15 +344,15 @@ rather than before it.
 
 \subsubsection{Teacher Control}
 Every decision that carries a pedagogical commitment is a per-concept
-contract, editable while the course runs (Fig. 2). Six fields govern
+contract, editable while the course runs (Fig. 2). Seven fields govern
 scaffolding, the conduct of the abstraction, the work regime, whether a
-sequence must be completed, a time allowance, and the treatment of
-non-comparable solutions.
+sequence must be completed, a time allowance, the treatment of
+non-comparable solutions, and the verification prompt.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth,height=3.45in,keepaspectratio]{fig4_contrats.png}
-\caption{The contracts view, shown with settings deliberately varied across concepts so that the range of each field is visible. One row per concept, six settings, applied immediately. Below the table, the console states what the current configuration costs: which concepts have scaffolding closed, which impose collaboration, which must be completed before the session can be left, which carry a time allowance, and which expose the schema and therefore lose the diagnostic value of the reuse indicator.}
+\caption{The contracts view, shown with settings deliberately varied across concepts so that the range of each field is visible. One row per concept, seven settings, applied immediately. Below the table, the console states what the current configuration costs: which concepts have scaffolding closed, which impose collaboration, which must be completed before the session can be left, which carry a time allowance, and which expose the schema and therefore lose the diagnostic value of the reuse indicator.}
 \end{figure*}
 
 Setting the abstraction field to \emph{exposed} converts a concept to
@@ -367,7 +368,7 @@ form of the first requirement.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth,height=3.60in,keepaspectratio]{fig2_familles.png}
-\caption{Family validation. For each of the sixteen families, shown under its French identifier (Section 2.4.1 gives the English names used in the text): the chapter it serves, its anchors, its validation mode, the variation points obtained by aligning its own reference solutions, the number the referential declares, the verdict, and its obligation. A family that does not conform is not served.}
+\caption{Family validation. For each of the sixteen families: the course unit it serves (ch.), its anchors, its validation mode, the variation points obtained by aligning its own reference solutions, the number the referential declares, the verdict, and its obligation. A family that does not conform is not served.}
 \end{figure*}
 
 \subsubsection{The Case for Preservation}
@@ -752,7 +753,7 @@ A framework that exposes an interface and stops there moves the difficulty rathe
 A provider is validated against writings known to be equivalent. The bench runs them, confirms the equivalence claim, normalizes each, and reports the number of equivalence classes. A correct provider gives one class for syntactic variants and separate classes for semantically distinct writings.
 
 \subsection{Obligation Inducer}
-In the original system, obligations were found by hand while writing the textbook chapters, at the point where the intended conclusion could not be justified from the anchors available. That took weeks and produced three obligations that were held with confidence, together with an unknown number that had been missed.
+In the original system, obligations were found by hand while designing the activity families, at the point where the intended conclusion could not be justified from the anchors available. That took weeks and produced three obligations that were held with confidence, together with an unknown number that had been missed.
 
 The operation is mechanizable. Align the complete family and record the count. Then, for each anchor, remove it, realign, and compare. An anchor whose removal changes the count is load-bearing, since it is the only member exhibiting one of the variations the family must display. The cost is linear in the number of anchors and each alignment is immediate. Table 3 reports the result on five fold reference solutions supplied to the generator, including \texttt{toutVrai}. The teacher-facing referential shown in Fig. 3 specifies four anchors; the generator's reference set is larger than that displayed family.
 
@@ -788,9 +789,8 @@ block granularity it names \texttt{listerA} where the referential names
 \texttt{hauteurA} the only one whose step does not combine the two
 recursive calls with the same structure, so each carries a different
 variation. The hand-written obligation had named one, missed the other,
-and failed to state the granularity at which it applied, an ambiguity
-that also existed, unnoticed, between two chapters of the accompanying
-textbook.
+and failed to state the granularity at which it applied, a choice that
+had never been made explicit.
 
 \subsection{Composition Assistant and Template Generation}
 The composition assistant aligns an author's reference solutions,
@@ -962,7 +962,7 @@ Family & Expected & Counts as the corpus grows & Premature triggers without stab
 \midrule
 fold & 3 & 2, 3, 3, 3 & 1 & at the 4th solution \\
 map & 1 & 1, 1, 1 & 1 & at the 3rd \\
-filter & 1 & 1, 1 & 1 & at the 3rd \\
+filter & 1 & 1, 1, 1 & 1 & at the 3rd \\
 failure & 1 & 1, 1 & 1 & at the 3rd \\
 \bottomrule
 \end{tabular}
@@ -1034,11 +1034,18 @@ recommendation has been tested with learners, and both should be treated
 as hypotheses drawn from a single instantiation.
 
 \subsection{Granularity Dependence of Obligations}
-The disagreement reported in Section 7.2 traces to a discrepancy between
-two chapters of the authors' own textbook, one counting variation points
-finely and the other by blocks. It had gone unnoticed for eighteen
-months. The framework now carries granularity as an explicit field of a
-family, and the inducer reports obligations at both levels. The general
+The disagreement reported in Section 7.2 traces to a choice of granularity
+that had never been stated: some obligations had been written by counting
+variation points finely, others by counting them by blocks. The framework
+now carries granularity as an explicit field of a
+family, and the inducer reports obligations at both levels. The session
+policy counts at the same declared granularity. This matters for the filter
+family: when the admitted predicates share a shape, as comparisons do, the
+fine count depends on the order and composition of the learner's corpus,
+because the decomposition criterion of Section 8.3 splits predicates it
+should treat as one. The filter family is therefore declared by blocks.
+Replayed in all twenty-four orders of its four activities, it opens the
+abstraction phase at the fourth solution in both instantiations. The general
 observation is that mechanizing an instructional design tends to surface
 the places where the design was underspecified, and that this is worth
 expecting rather than being surprised by.
@@ -1155,8 +1162,8 @@ is necessary.
 Fourth, the most expensive part of the design can be mechanized. The
 obligations of an activity family took us weeks to find by hand and were
 found incompletely. An ablation over reference solutions recovers them
-in seconds, including one exercise we had missed and a granularity
-ambiguity that had gone unnoticed for a year and a half.
+in seconds, including one exercise we had missed and an unstated choice
+of granularity.
 
 Finally, Section 10 sets out, as a projection rather than a result, what the same separation offers to a hybrid architecture. If the pedagogical policy is held apart from the domain knowledge, a language model can serve as a provider at the interface while the algebraic engine keeps the decisions that carry an instructional commitment. We have not built this system, and Section 10.2 states the conditions under which we would; we report it because the boundary the extraction produced turns out to be the boundary such an architecture needs.
 

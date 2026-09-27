@@ -1029,9 +1029,11 @@ the principal mechanism in the second.
 Two consequences follow for an author. Families need more anchors, since
 some will be consumed by non-comparable submissions; a four-anchor
 map family would be exhausted before stability if one anchor were
-consumed. And the default policy should be the \emph{confront}
-setting, which asks for the second writing as a comparison, rather than
-the \emph{explain and continue} setting that suits Haskell.
+consumed. The default policy should be \emph{confront}, which invites the learner to write a second, recursive solution alongside the correct but non-comparable one. Presenting the two writings as cases to compare,
+rather than treating the first as an error to correct, gives the learner
+an opportunity to discern what varies and what remains invariant
+[20], and to notice distinctions before the shared structure is named
+[21].
 
 \subsection{Count, Form, and Granularity}
 The disagreement reported in Section 7.2 shows that an obligation can
@@ -1059,11 +1061,11 @@ The material in this section is a projection rather than a result. Nothing descr
 
 The question the ITS community now faces is how to reconcile the fluidity of natural language interfaces with the structural commitments an instructional design makes. Prompting a generative model to act as a functional programming tutor is the direct approach, and it fails in a way that matters here. The model has no reason to withhold the name of a schema, and deferred exposure is the central commitment of the design we extracted.
 
-The failure has a name. In earlier work [20] we defined a \emph{behavioral hallucination} as a case in which an agent claims adherence to a pedagogical theory but does not enact its defining principles, and showed that this can occur with no factual error at all: a tutor may give a correct solution while violating the commitment to learner exploration that it declares. Our measurements there indicate that prompt-level instruction does not sustain theory-consistent behavior over a multi-turn dialogue, and that the influence of an initial prompt attenuates as the conversation grows. The response proposed in that work is a runtime control layer that retrieves and operationalizes theory-based strategies during the interaction, which reduced the rate of behavioral hallucination substantially relative to a prompt-only baseline in a controlled simulation.
+The failure has a name. In earlier work [22] we defined a \emph{behavioral hallucination} as a case in which an agent claims adherence to a pedagogical theory but does not enact its defining principles, and showed that this can occur with no factual error at all: a tutor may give a correct solution while violating the commitment to learner exploration that it declares. Our measurements there indicate that prompt-level instruction does not sustain theory-consistent behavior over a multi-turn dialogue, and that the influence of an initial prompt attenuates as the conversation grows. The response proposed in that work is a runtime control layer that retrieves and operationalizes theory-based strategies during the interaction, which reduced the rate of behavioral hallucination substantially relative to a prompt-only baseline in a controlled simulation.
 
-The situation here is a particular case of that one, and a favorable one. The commitment we need to protect is not a style of interaction but a single predicate over the learner's corpus: the name of a schema may be produced only after the alignment has stabilized at the count the family declares. Because that predicate is computable, it need not be retrieved, prompted or monitored. It can be enforced by refusing to make the phase available, which is what the framework already does for reasons that had nothing to do with generative models. Where PedRAG constrains a generative tutor at runtime with retrieved pedagogical strategies, the architecture sketched below constrains it by leaving the pedagogically consequential decision outside the model altogether. The two are complementary: most instructional commitments are not reducible to a computable predicate, and for those the runtime control of [20] remains the applicable instrument.
+The situation here is a particular case of that one, and a favorable one. The commitment we need to protect is not a style of interaction but a single predicate over the learner's corpus: the name of a schema may be produced only after the alignment has stabilized at the count the family declares. Because that predicate is computable, it need not be retrieved, prompted or monitored. It can be enforced by refusing to make the phase available, which is what the framework already does for reasons that had nothing to do with generative models. Where PedRAG constrains a generative tutor at runtime with retrieved pedagogical strategies, the architecture sketched below constrains it by leaving the pedagogically consequential decision outside the model altogether. The two are complementary: most instructional commitments are not reducible to a computable predicate, and for those the runtime control of [22] remains the applicable instrument.
 
-Reliability is the difficulty most often reported elsewhere as well. Hoq et al. [21] address it by keeping the instructor in the loop and by making the assistant's reasoning inspectable, which is another way of bounding a generative component. The interest of a decoupled architecture [22] is that it does not ask the model to respect that commitment.
+Reliability is the difficulty most often reported elsewhere as well. Hoq et al. [23] address it by keeping the instructor in the loop and by making the assistant's reasoning inspectable, which is another way of bounding a generative component. The interest of a decoupled architecture [24] is that it does not ask the model to respect that commitment.
 
 \subsection{A Neural Provider}
 The provider interface of Table 2 confines language dependence to five elements, of which only \texttt{analyse} is substantial. That element takes source text and returns a term in the common vocabulary. Nothing in the framework requires it to be written by hand.
@@ -1122,7 +1124,7 @@ The stability condition would then act as a guardrail in a stronger sense than i
 
 \subsection{Learner-Facing Uses}
 A generative component could also be placed in front of the learner rather than
-behind the provider, as in the self-regulation support of Li and Ma [23], where a
+behind the provider, as in the self-regulation support of Li and Ma [25], where a
 model comments on the learner's process within a course context. That use is
 attractive and it is not the one we would attempt first here, because the
 commitment our design makes is precisely about what may be said to a learner and
@@ -1328,24 +1330,32 @@ Education (AIED)}, Seoul, South Korea, 2026, pp. 79--93.
 structure of atomic formulas,'' \emph{Machine Intelligence}, vol. 5,
 pp. 135--151, 1970.
 
-[20] R. Nkambou, E. Nfor, and D. Kengne, ``PedRAG: Do LLM tutors
+[20] F. Marton and M. F. Pang, ``On some necessary conditions of
+learning,'' \emph{J. Learn. Sci.}, vol. 15, no. 2, pp. 193--220,
+2006, doi: 10.1207/s15327809jls1502\_2.
+
+[21] D. L. Schwartz and J. D. Bransford, ``A time for telling,''
+\emph{Cogn. Instr.}, vol. 16, no. 4, pp. 475--522,
+1998, doi: 10.1207/s1532690xci1604\_4.
+
+[22] R. Nkambou, E. Nfor, and D. Kengne, ``PedRAG: Do LLM tutors
 practice what they preach? Preventing behavioral hallucinations through
 theory-grounded runtime control,'' in \emph{Proc. Int. Conf. Educational
 Data Mining (EDM)}, 2026.
 
-[21] M. Hoq, G. Pitts, B. Mott, S. Lee, J. Vandenberg, S. Jiao, N.
+[23] M. Hoq, G. Pitts, B. Mott, S. Lee, J. Vandenberg, S. Jiao, N.
 Norouzi, J. Lester, and B. Akram, ``An explainable AI assistant for
 introductory programming education: Improving feedback reliability with
 instructor-AI collaboration,'' in \emph{Proc. 27th Int. Conf. Artificial
 Intelligence in Education (AIED 2026)}. Cham, Switzerland: Springer, 2026,
 pp. 187--201, doi: 10.1007/978-3-032-29744-0\_13.
 
-[22] M. K. Sarker, L. Zhou, A. Eberhart, and P. Hitzler,
+[24] M. K. Sarker, L. Zhou, A. Eberhart, and P. Hitzler,
 ``Neuro-symbolic artificial intelligence: Current trends, challenges, and
 future directions,'' \emph{IEEE Intell. Syst.}, vol. 36, no. 6, pp.
 75--81, 2021.
 
-[23] H. Li and B. Ma, ``Design of AI-powered tool for self-regulation support
+[25] H. Li and B. Ma, ``Design of AI-powered tool for self-regulation support
 in programming education,'' presented at the CHI 2025 Workshop on Augmented
 Educators and AI, Yokohama, Japan, 2025, arXiv:2504.03068.
 

@@ -1,45 +1,51 @@
 # PyTutor — l'instanciation Python du cadre
 
-Même cadre que HaskellTutor, même politique de session, même moteur d'alignement.
-Seuls trois fichiers diffèrent : le fournisseur de langage, les ancrages, et le
-script de lancement.
+Ce dossier contient ce qui est propre à Python dans FPTutor-Shell, le fournisseur
+de langage et les ancrages, ainsi que la version du noyau et du serveur sur
+laquelle les résultats de l'article ont été produits. Il sert à reproduire ces
+résultats ; le tuteur interactif, avec son interface, se lance depuis le dépôt
+du cadre.
 
-## Lancer
+## Lancer le tuteur interactif
 
-    cd pytutor
-    ./lancer.sh
+L'interface apprenant et la console enseignante font partie du cadre, dans le
+dépôt [haskellTutor](https://github.com/nkambou/haskellTutor). Le même serveur
+sert Haskell ou Python selon le fournisseur choisi :
 
-    ou, sans le script :
-    LANGUE_TUTEUR=langue_python PORT=8081 python3 serveur.py
+    cd haskellTutor
+    TUTOR_LANGUAGE=language_python PORT=8081 python3 serveur.py
 
     apprenant  : http://localhost:8081/
     enseignant : http://localhost:8081/enseignant
 
-Dépendances : Python 3.8 et rien d'autre. Contrairement à HaskellTutor, aucun
+Dépendances : Python 3.8 et rien d'autre. Contrairement au tuteur Haskell, aucun
 compilateur externe n'est nécessaire : les soumissions sont exécutées par
 l'interpréteur Python lui-même.
 
-Les deux tuteurs peuvent tourner en même temps sur deux ports différents ; ils ne
-partagent ni `etat.json` ni `journal.jsonl`.
+Les tuteurs Haskell (`python3 serveur.py`, port 8080) et Python peuvent tourner
+en même temps sur deux ports différents. Chacun écrit son état dans `etat.json`
+et `journal.jsonl` ; pour les faire tourner côte à côte sans partager ces
+fichiers, lancez-les depuis deux copies du dépôt.
 
-## Ce qui change par rapport à HaskellTutor
+## Ce que contient ce dossier
 
-| Fichier | Rôle | Différence |
-| --- | --- | --- |
-| `langue_python.py` | fournisseur de langage | **propre à Python** — 270 lignes |
-| `activites_python.py` | ancrages avec énoncés et tests | **propre à Python** — 14 activités |
-| `lancer.sh` | variable d'environnement | trivial |
-| tout le reste | cadre | **identique, octet pour octet** |
+| Fichier | Rôle |
+| --- | --- |
+| `langue_python.py` | fournisseur de langage Python, propre à Python |
+| `activites_python.py` | ancrages avec énoncés et tests, propres à Python |
+| `noyau.py`, `serveur.py`, `remontee.py`, `normalisation2.py` | version du cadre utilisée pour les résultats de l'article |
+| `referentiel.json` | référentiel des concepts et des familles |
+| `lancer.sh` | démarre ce serveur, qui n'expose que l'API (sans interface) |
 
-`serveur.py`, `noyau.py`, `remontee.py`, `normalisation2.py`, `etudiant.html`,
-`enseignant.html`, `referentiel.json`, `releves.py`, `generateur.py`,
-`obligations.py` et `ablations.py` sont les fichiers de HaskellTutor sans
-modification. Le tuteur change de langage par la variable `LANGUE_TUTEUR`, qui
-nomme le module de fournisseur à charger.
+`trace_pytutor.py`, à la racine du dépôt, utilise ce dossier pour reproduire la
+session des sections 5.5 et 5.6 de l'article, et le banc d'essai de
+`fptutor-shell/` l'utilise pour la section 8.1.
 
 ## Le fournisseur de langage
 
-Cinq éléments, décrits en tête de `langue_python.py` :
+Cinq éléments, décrits en tête de `langue_python.py`, sous leurs noms français ;
+les noms anglais du tableau 2 de l'article (`name`, `command`, `test_template`,
+`analyse`, `categorise`) sont définis en fin de fichier :
 
     nom, extension            identification
     commande(chemin)          comment exécuter le module de test
@@ -53,8 +59,10 @@ La normalisation passe par le module `ast` de la bibliothèque standard. Un indi
 émis en forme préfixe pour que `xs[0].upper()` et `head x` aient la même forme.
 
 Deux normalisations sémantiques : la commutativité, restreinte à `+` et `*`, et la
-reconnaissance des trois écritures du test de vacuité — `not xs`, `len(xs) == 0`,
-`xs == []`.
+reconnaissance des trois écritures du test de vacuité, `not xs`, `len(xs) == 0`
+et `xs == []`. Une sélection s'écrit indifféremment avec deux `return`
+successifs, un `if … else` ou une expression conditionnelle ; les trois
+donnent la même forme `COND (test) (branche conservée) (branche écartée)`.
 
 ## Les formes non comparables
 
@@ -84,6 +92,8 @@ Le second réglage se fait dans l'onglet Contrats de la console enseignante.
 
 ## Vérifier l'installation
 
+Depuis ce dossier :
+
     python3 langue_python.py
 
 Aligne trois définitions Python de la famille de transformation et quatre de la
@@ -111,14 +121,16 @@ nommerait le schéma visé.
 
 ## Les treize autres familles
 
-Comme pour HaskellTutor, les treize familles restantes du référentiel sont
-spécifiées mais n'ont pas d'ancrages exécutables. Elles se remplissent de la même
-manière, et le contrôle au chargement — `python3 generateur.py` — dira si les
+Les treize familles restantes du référentiel sont spécifiées mais n'ont pas
+d'ancrages exécutables. Elles se remplissent de la même manière, et le contrôle
+des familles, `python3 generateur.py` depuis la racine du dépôt, dit si les
 solutions de référence d'une famille s'alignent au compte que le référentiel
 annonce.
 
 ## Outillage
 
+Depuis la racine du dépôt :
+
     python3 obligations.py    induit les ancrages porteurs de chaque famille
     python3 ablations.py      études d'ablation sur le moteur
-    python3 releves.py journal.jsonl    relevés de cohorte par chapitre
+    python3 trace_pytutor.py  session Python des sections 5.5 et 5.6

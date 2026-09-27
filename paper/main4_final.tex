@@ -580,7 +580,7 @@ its standard library contains a parser, which proved more consequential
 than expected.
 
 \subsection{The Provider}
-The Python provider is 270 lines. Normalization is a walk over the tree
+The Python provider is about 380 lines. Normalization is a walk over the tree
 produced by the \texttt{ast} module, emitting the common vocabulary. A
 subscript at index 0 on the function's parameter becomes \texttt{C1}, a
 slice from index 1 becomes \texttt{RESTE}, a call to the function being
@@ -734,7 +734,7 @@ The procedure below is the one followed for Python.
 
 \textbf{Step 1: decide the target schemas and the concept graph.} The author writes the referential: concepts, prerequisites, and for each concept whether it is acquired through instances alone or through abstraction from a family. For Python the Haskell concept graph was kept unchanged, since the schemas are the same. An author teaching a different curriculum edits this file and nothing else.
 
-\textbf{Step 2: write the provider.} The five elements. For Python this was 270 lines, about 150 of them the analyser, and the work is a tree walk emitting the common vocabulary. One practical recommendation follows from experience: write the analyser against three or four reference solutions and print the canonical forms before connecting anything, since a canonical form that looks wrong on inspection is far cheaper to diagnose than an alignment count that comes out wrong two layers higher.
+\textbf{Step 2: write the provider.} The five elements. For Python this was about 380 lines, about 230 of them the analyser, and the work is a tree walk emitting the common vocabulary. One practical recommendation follows from experience: write the analyser against three or four reference solutions and print the canonical forms before connecting anything, since a canonical form that looks wrong on inspection is far cheaper to diagnose than an alignment count that comes out wrong two layers higher.
 
 \textbf{Step 3: validate the provider on the test bench.} Supply writings known to be equivalent and writings known to be distinct. The Python provider failed this step on the first attempt in three ways, none of them visible by reading the code.
 
@@ -755,11 +755,11 @@ A provider is validated against writings known to be equivalent. The bench runs 
 \subsection{Obligation Inducer}
 In the original system, obligations were found by hand while designing the activity families, at the point where the intended conclusion could not be justified from the anchors available. That took weeks and produced three obligations that were held with confidence, together with an unknown number that had been missed.
 
-The operation is mechanizable. Align the complete family and record the count. Then, for each anchor, remove it, realign, and compare. An anchor whose removal changes the count is load-bearing, since it is the only member exhibiting one of the variations the family must display. The cost is linear in the number of anchors and each alignment is immediate. Table 3 reports the result on five fold reference solutions supplied to the generator, including \texttt{toutVrai}. The teacher-facing referential shown in Fig. 3 specifies four anchors; the generator's reference set is larger than that displayed family.
+The operation is mechanizable. Align the complete family and record the count. Then, for each anchor, remove it, realign, and compare. An anchor whose removal changes the count is load-bearing, since it is the only member exhibiting one of the variations the family must display. The cost is linear in the number of anchors and each alignment is immediate. Table 3 reports the result on the five anchors of the fold family.
 
 \begin{table*}[t]
 \centering\scriptsize
-\caption{Obligation Induction on Five Fold Reference Solutions}
+\caption{Obligation Induction on the Fold Family}
 \begin{tabular}{@{}p{1.07in}p{2.28in}p{1.34in}p{2.01in}@{}}
 \toprule
 Anchor & Points without it & Difference & Verdict \\
@@ -1007,8 +1007,10 @@ authors considering a similar extraction.
 
 \subsection{Parser Availability and Instantiation Cost}
 Python was expected to be harder than Haskell, since it offers more ways
-to write the same computation. The Python provider is marginally shorter
-and required fewer corrections. The reason is that the standard library
+to write the same computation. The two providers are of comparable size,
+about 350 lines for Haskell and 380 for Python, even though the Python
+provider recognizes more writings of each operation. The reason is that
+the standard library
 supplies a parser, which absorbs at no cost the writing variance, namely
 parenthesization, spacing, identifier naming, and clause ordering, that
 the Haskell provider handles textually and that was the part of the
@@ -1147,7 +1149,7 @@ about properties of a language. Language dependence concentrates in a
 provider interface with five elements, of which one carries the load.
 
 Second, the interface is sufficient for a second language of the same
-paradigm. The Python provider is 270 lines, it was connected to the
+paradigm. The Python provider is about 380 lines, it was connected to the
 anti-unifier without modifying it, it reproduces the variation-point
 counts of the Haskell instantiation on the two families tested, and the
 session policy runs on Python submissions with no line changed.

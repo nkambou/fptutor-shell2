@@ -23,9 +23,9 @@ compilateur externe n'est nécessaire : les soumissions sont exécutées par
 l'interpréteur Python lui-même.
 
 Les tuteurs Haskell (`python3 serveur.py`, port 8080) et Python peuvent tourner
-en même temps, depuis le même dossier, sur deux ports différents : chacun a son
-propre fichier d'état et son propre journal (`etat.json` et `journal.jsonl` pour
-Haskell, `etat_python.json` et `journal_python.jsonl` pour Python).
+en même temps sur deux ports différents. Chacun écrit son état dans `etat.json`
+et `journal.jsonl` ; pour les faire tourner côte à côte sans partager ces
+fichiers, lancez-les depuis deux copies du dépôt.
 
 ## Ce que contient ce dossier
 

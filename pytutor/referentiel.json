@@ -433,6 +433,11 @@
           "type": "[[a]] -> [a]",
           "neutre": "[]",
           "operation": "++"
+        },
+        {
+          "type": "[Bool] -> Bool",
+          "neutre": "True",
+          "operation": "&&"
         }
       ],
       "solution_de_reference": "f [] = Z ; f (x:xs) = OP x (f xs)",

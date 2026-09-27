@@ -1,0 +1,148 @@
+diff --git a/README.md b/README.md
+index 501f0df..a780e30 100644
+--- a/README.md
++++ b/README.md
+@@ -40,11 +40,16 @@ example.
+ 
+ ## Notes
+ 
+-The root referential uses the family identifiers of the research generator
+-(`F-map`, `F-filter`, `F-fold`); `pytutor/referentiel.json` uses those of the
+-running tutor (`F-transformation`, `F-selection`, `F-pli`). The generator's fold
+-family includes a fifth reference solution, `toutVrai`, used to test the
+-obligation inducer; the running tutor serves four fold anchors.
++The interactive tutor, with its learner interface and teacher console, is in the
++[haskellTutor](https://github.com/nkambou/haskellTutor) repository; the Python
++tutor runs there with `TUTOR_LANGUAGE=language_python python3 serveur.py`.
++This repository reproduces the results of the article.
++
++The root referential and the running tutor use the family identifiers `F-map`,
++`F-filter` and `F-fold`; `pytutor/referentiel.json` uses the French identifiers
++of the version on which the results were produced (`F-transformation`,
++`F-selection`, `F-pli`). The fold family declares five anchors, `toutVrai`
++among them, in the generator and in the running tutor alike.
+ 
+ ## License
+ 
+diff --git a/paper/fig1_haskell.png b/paper/fig1_haskell.png
+index 87d4137..d09f17d 100644
+Binary files a/paper/fig1_haskell.png and b/paper/fig1_haskell.png differ
+diff --git a/paper/fig2_familles.png b/paper/fig2_familles.png
+index cdc4fac..9e86589 100644
+Binary files a/paper/fig2_familles.png and b/paper/fig2_familles.png differ
+diff --git a/paper/fig4_contrats.png b/paper/fig4_contrats.png
+index c09f2d4..36bd66d 100644
+Binary files a/paper/fig4_contrats.png and b/paper/fig4_contrats.png differ
+diff --git a/paper/fig5_python.png b/paper/fig5_python.png
+index cf53989..0071054 100644
+Binary files a/paper/fig5_python.png and b/paper/fig5_python.png differ
+diff --git a/paper/fig_couches.png b/paper/fig_couches.png
+index 04b5ce0..2c581cd 100644
+Binary files a/paper/fig_couches.png and b/paper/fig_couches.png differ
+diff --git a/paper/main4_final.tex b/paper/main4_final.tex
+index 50d3ebe..a8e9456 100644
+--- a/paper/main4_final.tex
++++ b/paper/main4_final.tex
+@@ -580,7 +580,7 @@ its standard library contains a parser, which proved more consequential
+ than expected.
+ 
+ \subsection{The Provider}
+-The Python provider is 270 lines. Normalization is a walk over the tree
++The Python provider is about 380 lines. Normalization is a walk over the tree
+ produced by the \texttt{ast} module, emitting the common vocabulary. A
+ subscript at index 0 on the function's parameter becomes \texttt{C1}, a
+ slice from index 1 becomes \texttt{RESTE}, a call to the function being
+@@ -734,7 +734,7 @@ The procedure below is the one followed for Python.
+ 
+ \textbf{Step 1: decide the target schemas and the concept graph.} The author writes the referential: concepts, prerequisites, and for each concept whether it is acquired through instances alone or through abstraction from a family. For Python the Haskell concept graph was kept unchanged, since the schemas are the same. An author teaching a different curriculum edits this file and nothing else.
+ 
+-\textbf{Step 2: write the provider.} The five elements. For Python this was 270 lines, about 150 of them the analyser, and the work is a tree walk emitting the common vocabulary. One practical recommendation follows from experience: write the analyser against three or four reference solutions and print the canonical forms before connecting anything, since a canonical form that looks wrong on inspection is far cheaper to diagnose than an alignment count that comes out wrong two layers higher.
++\textbf{Step 2: write the provider.} The five elements. For Python this was about 380 lines, about 230 of them the analyser, and the work is a tree walk emitting the common vocabulary. One practical recommendation follows from experience: write the analyser against three or four reference solutions and print the canonical forms before connecting anything, since a canonical form that looks wrong on inspection is far cheaper to diagnose than an alignment count that comes out wrong two layers higher.
+ 
+ \textbf{Step 3: validate the provider on the test bench.} Supply writings known to be equivalent and writings known to be distinct. The Python provider failed this step on the first attempt in three ways, none of them visible by reading the code.
+ 
+@@ -755,11 +755,11 @@ A provider is validated against writings known to be equivalent. The bench runs
+ \subsection{Obligation Inducer}
+ In the original system, obligations were found by hand while designing the activity families, at the point where the intended conclusion could not be justified from the anchors available. That took weeks and produced three obligations that were held with confidence, together with an unknown number that had been missed.
+ 
+-The operation is mechanizable. Align the complete family and record the count. Then, for each anchor, remove it, realign, and compare. An anchor whose removal changes the count is load-bearing, since it is the only member exhibiting one of the variations the family must display. The cost is linear in the number of anchors and each alignment is immediate. Table 3 reports the result on five fold reference solutions supplied to the generator, including \texttt{toutVrai}. The teacher-facing referential shown in Fig. 3 specifies four anchors; the generator's reference set is larger than that displayed family.
++The operation is mechanizable. Align the complete family and record the count. Then, for each anchor, remove it, realign, and compare. An anchor whose removal changes the count is load-bearing, since it is the only member exhibiting one of the variations the family must display. The cost is linear in the number of anchors and each alignment is immediate. Table 3 reports the result on the five anchors of the fold family.
+ 
+ \begin{table*}[t]
+ \centering\scriptsize
+-\caption{Obligation Induction on Five Fold Reference Solutions}
++\caption{Obligation Induction on the Fold Family}
+ \begin{tabular}{@{}p{1.07in}p{2.28in}p{1.34in}p{2.01in}@{}}
+ \toprule
+ Anchor & Points without it & Difference & Verdict \\
+@@ -1007,8 +1007,10 @@ authors considering a similar extraction.
+ 
+ \subsection{Parser Availability and Instantiation Cost}
+ Python was expected to be harder than Haskell, since it offers more ways
+-to write the same computation. The Python provider is marginally shorter
+-and required fewer corrections. The reason is that the standard library
++to write the same computation. The two providers are of comparable size,
++about 350 lines for Haskell and 380 for Python, even though the Python
++provider recognizes more writings of each operation. The reason is that
++the standard library
+ supplies a parser, which absorbs at no cost the writing variance, namely
+ parenthesization, spacing, identifier naming, and clause ordering, that
+ the Haskell provider handles textually and that was the part of the
+@@ -1147,7 +1149,7 @@ about properties of a language. Language dependence concentrates in a
+ provider interface with five elements, of which one carries the load.
+ 
+ Second, the interface is sufficient for a second language of the same
+-paradigm. The Python provider is 270 lines, it was connected to the
++paradigm. The Python provider is about 380 lines, it was connected to the
+ anti-unifier without modifying it, it reproduces the variation-point
+ counts of the Haskell instantiation on the two families tested, and the
+ session policy runs on Python submissions with no line changed.
+diff --git a/pytutor/LISEZMOI.md b/pytutor/LISEZMOI.md
+index bd84bc7..58731e1 100644
+--- a/pytutor/LISEZMOI.md
++++ b/pytutor/LISEZMOI.md
+@@ -23,9 +23,9 @@ compilateur externe n'est nécessaire : les soumissions sont exécutées par
+ l'interpréteur Python lui-même.
+ 
+ Les tuteurs Haskell (`python3 serveur.py`, port 8080) et Python peuvent tourner
+-en même temps sur deux ports différents. Chacun écrit son état dans `etat.json`
+-et `journal.jsonl` ; pour les faire tourner côte à côte sans partager ces
+-fichiers, lancez-les depuis deux copies du dépôt.
++en même temps, depuis le même dossier, sur deux ports différents : chacun a son
++propre fichier d'état et son propre journal (`etat.json` et `journal.jsonl` pour
++Haskell, `etat_python.json` et `journal_python.jsonl` pour Python).
+ 
+ ## Ce que contient ce dossier
+ 
+diff --git a/pytutor/referentiel.json b/pytutor/referentiel.json
+index a9e25c6..586142a 100644
+--- a/pytutor/referentiel.json
++++ b/pytutor/referentiel.json
+@@ -433,6 +433,11 @@
+           "type": "[[a]] -> [a]",
+           "neutre": "[]",
+           "operation": "++"
++        },
++        {
++          "type": "[Bool] -> Bool",
++          "neutre": "True",
++          "operation": "&&"
+         }
+       ],
+       "solution_de_reference": "f [] = Z ; f (x:xs) = OP x (f xs)",
+diff --git a/referentiel.json b/referentiel.json
+index d5d4152..4471b59 100644
+--- a/referentiel.json
++++ b/referentiel.json
+@@ -437,6 +437,11 @@
+           "type": "[[a]] -> [a]",
+           "neutre": "[]",
+           "operation": "++"
++        },
++        {
++          "type": "[Bool] -> Bool",
++          "neutre": "True",
++          "operation": "&&"
+         }
+       ],
+       "solution_de_reference": "f [] = Z ; f (x:xs) = OP x (f xs)",
